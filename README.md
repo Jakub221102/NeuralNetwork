@@ -1,6 +1,6 @@
 # 22Z WSI Lab 5 - Sieci neuronowe
 
-Zadanie z przedmiotu WSI do wykonania w zespołach dwuosobowych.
+Zadanie z przedmiotu WSI do wykonania w zespołach dwuosobowych.  
 Skład:
 
 - Jan Kowalczewski
