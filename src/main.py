@@ -1,5 +1,9 @@
+from src.prepare_datasets import prepare_datasets
+
+
 def main():
-    pass
+    # Test config
+    train_dataset, validate_dataset, test_dataset = prepare_datasets()
 
 
 if __name__ == '__main__':
