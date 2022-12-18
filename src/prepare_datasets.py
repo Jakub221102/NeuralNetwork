@@ -4,9 +4,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 
-MNIST_PATH = "../data/mnist/"
+MNIST_PATH = "data/mnist/"
 TEST_SIZE = 0.2
-IMAGE_PATH = "../images/"
+IMAGE_PATH = "images/"
 
 
 def load_mnist(path, kind='train'):
