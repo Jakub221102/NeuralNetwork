@@ -39,13 +39,13 @@ class NeuralNetworkSolver:
         predictions = []
         for i in range(len(test_dataset_x)):
             for b, w in zip(self.biases, self.weights):
-                result_of_activation = self.parameters["activation_function"](np.dot(w, test_dataset_x[0][i])+b)
+                result_of_activation = self.parameters["activation_function"](np.dot(w, test_dataset_x[i])+b)
             predictions.append(np.argmax(result_of_activation))
         
         return predictions
     
 
-    def accuracy(self, predictions, test_dataset_x):
-        return metrics.accuracy_score(test_dataset_x[1], predictions)
+    def accuracy(self, predictions, test_dataset):
+        return metrics.accuracy_score(test_dataset[1], predictions)
 
 
