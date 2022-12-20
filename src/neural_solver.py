@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn import metrics
+from math import sqrt
 import random
+
 
 from src.gradient.gradient_solver import GradientSolver
 
@@ -15,7 +17,7 @@ class NeuralNetworkSolver:
         }
         self.gradient_solver = GradientSolver(self, gradient_step, gradient_precision, gradient_max_iterations)
         self.biases = [np.random.randn(y, 1) for y in neurons_per_layer[1:]]
-        self.weights = [np.random.randn(y, x) for x, y in zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
+        self.weights = [np.random.uniform(-1/sqrt(x), 1/sqrt(x), [y, x]) for x, y in zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
 
     def get_parameter(self, param):
         return self.parameters[param] if param in self.parameters else None
