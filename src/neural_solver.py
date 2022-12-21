@@ -3,8 +3,10 @@ from typing import List
 import numpy as np
 from sklearn import metrics
 from math import sqrt
-from src.tool_function.activation_function import ActivationFunction
-from src.tool_function.cost_function import CostFunction
+from src.tool_function.activation_function import ActivationFunction, SigmoidActivationFunction
+from src.tool_function.cost_function import CostFunction, QuadraticCostFunction
+from src.mini_batches import generate_mini_batches
+from src.utils import add_matrices_in_place
 
 
 class NeuralNetworkSolver:
@@ -20,10 +22,53 @@ class NeuralNetworkSolver:
             "epochs": epochs
         }
         self.biases = [np.random.randn(y, 1) for y in neurons_per_layer[1:]]
-        self.weights = [np.random.uniform(-1/sqrt(x), 1/sqrt(x), [y, x]) for x, y in zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
+        self.weights = [np.random.uniform(-1 / sqrt(x), 1 / sqrt(x), [y, x]) for x, y in
+                        zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
+        self.neuron_values = [np.zeros([y, 1]) for y in neurons_per_layer]
+        self.activations = [np.zeros([y, 1]) for y in neurons_per_layer]
 
     def get_parameter(self, param):
         return self.parameters[param] if param in self.parameters else None
+
+    def train(self, train_dataset: np.array):
+        """
+        Train the neural network
+        :param train_dataset: Train dataset
+        :return: None
+        """
+        for i in range(self.get_parameter("epochs")):
+            print("Epoch: ", i + 1)
+            for X, Y in generate_mini_batches(train_dataset, self.get_parameter("batch_size")):
+                self._stochistic_gradient(X, Y)
+
+    def _stochistic_gradient(self, X, Y):
+        """
+        One iteration of stochistic gradient descent
+        :param x: Input
+        :param y: Output
+        :return: None
+        """
+        weights_gradient = [np.full_like(w, 0) for w in self.weights]
+        biases_gradient = [np.full_like(b, 0) for b in self.biases]
+        for x, y in zip(X, Y):
+            self._update_network_state(x)
+            weights_diff, biases_diff = self._backpropagation(x, y)
+            add_matrices_in_place(weights_gradient, weights_diff)
+            add_matrices_in_place(biases_gradient, biases_diff)
+        add_matrices_in_place(self.weights,
+                              [self.get_parameter("gradient_step") * w / len(X) for w in weights_gradient])
+        add_matrices_in_place(self.biases, [self.get_parameter("gradient_step") * b / len(X) for b in biases_gradient])
+
+    def _update_network_state(self, x):
+        """
+        Update the state of the network
+        :param x: Input
+        :return: None
+        """
+        self.activations[0] = x
+        for i, b, w in zip(range(len(self.biases)), self.biases, self.weights):
+            self.neuron_values[i + 1] = np.dot(w, self.activations[i]) + b
+            self.activations[i + 1] = self.parameters["activation_function"].get_value(self.neuron_values[i + 1])
 
     def _backpropagation(self, x, y):
         """
@@ -32,24 +77,18 @@ class NeuralNetworkSolver:
         :param y: Output
         :return: None
         """
-        pass
-
-    def _stochistic_gradient(self, x, y):
-        """
-        Stochistic gradient descent algorithm
-        :param x: Input
-        :param y: Output
-        :return: None
-        """
-        pass
-
-    def train(self, train_dataset: np.array):
-        """
-        Train the neural network
-        :param train_dataset: Train dataset
-        :return: None
-        """
-        pass
+        weights_diff = [np.full_like(w, 0) for w in self.weights]
+        biases_diff = [np.full_like(b, 0) for b in self.biases]
+        delta = self.get_parameter("cost_function").get_derivative(self.activations[-1], y) * self.get_parameter(
+            "activation_function").get_derivative(self.neuron_values[-1])
+        biases_diff[-1] = delta
+        weights_diff[-1] = np.dot(delta, self.activations[-2].transpose())
+        for i in range(2, self.get_parameter("layers")):
+            delta = np.dot(self.weights[-i + 1].transpose(), delta) * self.get_parameter(
+                "activation_function").get_derivative(self.neuron_values[-i])
+            biases_diff[-i] = delta
+            weights_diff[-i] = np.dot(delta, self.activations[-i - 1].transpose())
+        return weights_diff, biases_diff
 
     def predict(self, test_dataset_x) -> np.array:
         """
@@ -60,9 +99,9 @@ class NeuralNetworkSolver:
         predictions = []
         for i in range(len(test_dataset_x)):
             for b, w in zip(self.biases, self.weights):
-                result_of_activation = self.parameters["activation_function"].get_value(np.dot(w, test_dataset_x[i])+b)
+                result_of_activation = self.parameters["activation_function"].get_value(
+                    np.dot(w, test_dataset_x[i]) + b)
             predictions.append(np.argmax(result_of_activation))
-
         return predictions
 
     @staticmethod
@@ -73,5 +112,4 @@ class NeuralNetworkSolver:
         #             good_number += 1
         #     precent = round(good_number * 100 / test_dataset[1].size, 2)
         return metrics.accuracy_score(test_dataset[1], predictions)
-
 
