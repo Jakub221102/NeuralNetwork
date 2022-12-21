@@ -30,6 +30,9 @@ def prepare_datasets():
     X, y = load_mnist(MNIST_PATH, kind='train')
     X_train, X_validate, Y_train, Y_validate = train_test_split(X, y, test_size=TEST_SIZE, random_state=0)
     X_test, Y_test = load_mnist(MNIST_PATH, kind='t10k')
+    X_train = X_train/255
+    X_validate = X_validate/255
+    X_test = X_test/255
 
     return (X_train, Y_train), (X_validate, Y_validate), (X_test, Y_test)
 
