@@ -98,10 +98,11 @@ class NeuralNetworkSolver:
         :return: Array of numbers (0-9) representing the predicted classes
         """
         predictions = []
-        for i, b, w in zip(range(len(test_dataset_x)), self.biases, self.weights):
-            result_of_activation = self.parameters["activation_function"].get_value(
-                np.dot(w, test_dataset_x[i]) + b)
-            predictions.append(np.argmax(result_of_activation))
+        for i in range(len(test_dataset_x)):
+            input = test_dataset_x[i]
+            for ii, b, w in zip(range(len(self.biases)), self.biases, self.weights):
+                input = self.parameters["activation_function"].get_value(np.dot(w, input) + b)
+            predictions.append(np.argmax(input))
         return predictions
 
     @staticmethod
