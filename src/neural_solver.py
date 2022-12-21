@@ -21,11 +21,11 @@ class NeuralNetworkSolver:
             "batch_size": batch_size,
             "epochs": epochs
         }
-        self.biases = [np.random.randn(y, 1) for y in neurons_per_layer[1:]]
+        self.biases = [np.random.randn(y) for y in neurons_per_layer[1:]]
         self.weights = [np.random.uniform(-1 / sqrt(x), 1 / sqrt(x), [y, x]) for x, y in
                         zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
-        self.neuron_values = [np.zeros([y, 1]) for y in neurons_per_layer]
-        self.activations = [np.zeros([y, 1]) for y in neurons_per_layer]
+        self.neuron_values = [np.zeros(y) for y in neurons_per_layer]
+        self.activations = [np.zeros(y) for y in neurons_per_layer]
 
     def get_parameter(self, param):
         return self.parameters[param] if param in self.parameters else None
@@ -82,7 +82,7 @@ class NeuralNetworkSolver:
         delta = self.get_parameter("cost_function").get_derivative(self.activations[-1], y) * self.get_parameter(
             "activation_function").get_derivative(self.neuron_values[-1])
         biases_diff[-1] = delta
-        weights_diff[-1] = np.dot(delta, self.activations[-2].transpose())
+        weights_diff[-1] = np.dot(delta.reshape((len(delta), 1)), self.activations[-2].reshape((1, len(self.activations))))
         for i in range(2, self.get_parameter("layers")):
             delta = np.dot(self.weights[-i + 1].transpose(), delta) * self.get_parameter(
                 "activation_function").get_derivative(self.neuron_values[-i])
