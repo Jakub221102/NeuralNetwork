@@ -6,7 +6,7 @@ from math import sqrt
 from src.tool_function.activation_function import ActivationFunction, SigmoidActivationFunction
 from src.tool_function.cost_function import CostFunction, QuadraticCostFunction
 from src.mini_batches import generate_mini_batches
-from src.utils import add_matrices_in_place
+from src.utils import add_matrices_in_place, convert_label_to_neuron_values
 
 
 class NeuralNetworkSolver:
@@ -52,7 +52,7 @@ class NeuralNetworkSolver:
         biases_gradient = [np.full_like(b, 0) for b in self.biases]
         for x, y in zip(X, Y):
             self._update_network_state(x)
-            weights_diff, biases_diff = self._backpropagation(x, y)
+            weights_diff, biases_diff = self._backpropagation(convert_label_to_neuron_values(y))
             add_matrices_in_place(weights_gradient, weights_diff)
             add_matrices_in_place(biases_gradient, biases_diff)
         add_matrices_in_place(self.weights,
@@ -70,7 +70,7 @@ class NeuralNetworkSolver:
             self.neuron_values[i + 1] = np.dot(w, self.activations[i]) + b
             self.activations[i + 1] = self.get_parameter("activation_function").get_value(self.neuron_values[i + 1])
 
-    def _backpropagation(self, x, y):
+    def _backpropagation(self, y):
         """
         Backpropagation algorithm
         :param x: Input
