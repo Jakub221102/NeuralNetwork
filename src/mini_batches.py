@@ -5,6 +5,8 @@ from sklearn.utils import shuffle
 def generate_mini_batches(dataset: np.ndarray, batch_size: int):
     """tu zwykłe shuffle nie działało """
     x, y = shuffle(dataset[0], dataset[1])
+    # x = dataset[0]
+    # y = dataset[1]
     assert len(x) == len(y)
     batch_n = len(x) // batch_size
     for i in range(batch_n):

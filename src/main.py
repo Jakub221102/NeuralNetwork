@@ -4,14 +4,14 @@ import os
 sys.path.append(os.getcwd())
 from src.prepare_datasets import prepare_datasets
 from src.neural_solver import NeuralNetworkSolver
-from src.tool_function.activation_function import ActivationFunction, SigmoidActivationFunction
+from src.tool_function.activation_function import ActivationFunction, SigmoidActivationFunction, ReLUActivationFunction
 from src.tool_function.cost_function import CostFunction, QuadraticCostFunction
 
 
 def main():
     # Test config
     train_dataset, validate_dataset, test_dataset = prepare_datasets()
-    solver = NeuralNetworkSolver([784, 16, 16, 10], SigmoidActivationFunction(), QuadraticCostFunction(),  0.1, 1000, 1)
+    solver = NeuralNetworkSolver([784, 16, 16, 10], SigmoidActivationFunction(), QuadraticCostFunction(),  0.2, 2400, 40)
     params = solver.get_parameter("neurons_per_layer")
     print(params)
     print(solver.get_parameter("layers"))
