@@ -15,7 +15,7 @@ class ActivationFunction:
 
 class ReLUActivationFunction(ActivationFunction):
     def get_value(self, x):
-        return max(0, x)
+        return np.max(0, x)
 
     def get_derivative(self, x):
         return 1 if x > 0 else 0
