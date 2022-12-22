@@ -11,7 +11,7 @@ from src.tool_function.cost_function import CostFunction, QuadraticCostFunction
 def main():
     # Test config
     train_dataset, validate_dataset, test_dataset = prepare_datasets()
-    solver = NeuralNetworkSolver([784, 16, 16, 10], SigmoidActivationFunction(), QuadraticCostFunction(),  0.1, 1000, 20)
+    solver = NeuralNetworkSolver([784, 10], SigmoidActivationFunction(), QuadraticCostFunction(),  0.1, 1000, 20)
     params = solver.get_parameter("neurons_per_layer")
     print(params)
     print(solver.get_parameter("layers"))
