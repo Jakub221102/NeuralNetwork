@@ -33,26 +33,28 @@ def prepare_datasets():
     X_train = X_train/255
     X_validate = X_validate/255
     X_test = X_test/255
+    Y_train = [convert_label_to_neuron_values(y) for y in Y_train]
+    X_train = [np.reshape(x, (784, 1)) for x in X_train]
+    train_data = (X_train, Y_train)
+    X_validate = [np.reshape(x, (784, 1)) for x in X_validate]
+    validate_data = (X_validate, Y_validate)
+    X_test = [np.reshape(x, (784, 1)) for x in X_test]
+    test_data = (X_test, Y_test)
 
-    return (X_train, Y_train), (X_validate, Y_validate), (X_test, Y_test)
+    return train_data, validate_data, test_data
 
 
-def generate_img(X, Y):
-    fig, ax = plt.subplots(nrows=5, ncols=5, sharex=True, sharey=True)
-    ax = ax.flatten()
-    for i in range(25):
-        img = X[Y == 4][i].reshape(28, 28)
-        ax[i].imshow(img, cmap='Greys', interpolation='nearest')
-    ax[0].set_xticks([])
-    ax[0].set_yticks([])
-    fig.tight_layout()
-    fig.savefig(IMAGE_PATH + "cos")
+def convert_label_to_neuron_values(label: int) -> np.ndarray:
+    neuron_values = np.zeros(10)
+    neuron_values[label] = 1.0
+    return neuron_values
 
 
 if __name__ == '__main__':
     train_dataset, validate_dataset, test_dataset = prepare_datasets()
+    # train_dataset = list(train_dataset)
+    # print(train_dataset[0])
     # print(train_dataset[0][0])
     # print(train_dataset[1][0])
     # print(validate_dataset[0].shape)
-    print(test_dataset[0].shape)
     # generate_img(train_dataset[0], train_dataset[1])

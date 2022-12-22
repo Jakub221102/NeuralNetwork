@@ -6,7 +6,7 @@ from math import sqrt
 from src.tool_function.activation_function import ActivationFunction, SigmoidActivationFunction
 from src.tool_function.cost_function import CostFunction, QuadraticCostFunction
 from src.mini_batches import generate_mini_batches
-from src.utils import add_matrices_in_place, convert_label_to_neuron_values, subtract_matrices_in_place
+from src.utils import add_matrices_in_place, subtract_matrices_in_place
 
 
 class NeuralNetworkSolver:
@@ -24,8 +24,8 @@ class NeuralNetworkSolver:
         self.biases = [np.random.randn(y, 1) for y in neurons_per_layer[1:]]
         self.weights = [np.random.uniform(-1 / sqrt(x), 1 / sqrt(x), [y, x]) for x, y in
                         zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
-        self.neuron_values = [np.zeros(y, 1) for y in neurons_per_layer]
-        self.activations = [np.zeros(y, 1) for y in neurons_per_layer]
+        self.neuron_values = [np.zeros((y, 1)) for y in neurons_per_layer]
+        self.activations = [np.zeros((y, 1)) for y in neurons_per_layer]
 
     def get_parameter(self, param):
         return self.parameters[param] if param in self.parameters else None
@@ -52,7 +52,7 @@ class NeuralNetworkSolver:
         biases_gradient = [np.full_like(b, 0) for b in self.biases]
         for x, y in zip(X, Y):
             self._update_network_state(x)
-            weights_diff, biases_diff = self._backpropagation(convert_label_to_neuron_values(y))
+            weights_diff, biases_diff = self._backpropagation(y)
             add_matrices_in_place(weights_gradient, weights_diff)
             add_matrices_in_place(biases_gradient, biases_diff)
         subtract_matrices_in_place(self.weights, [self.get_parameter("gradient_step") * w / len(X) for w in weights_gradient])
@@ -84,11 +84,11 @@ class NeuralNetworkSolver:
         activation_derivative = activation_function.get_derivative(self.neuron_values[-1])
         delta = cost_derivative * activation_derivative
         biases_diff[-1] = delta
-        weights_diff[-1] = np.dot(delta.reshape((len(delta), 1)), self.activations[-2].reshape((1, len(self.activations[-2]))))
+        weights_diff[-1] = np.dot(delta, self.activations[-2].transpose())
         for i in range(2, self.get_parameter("layers")):
             delta = np.dot(self.weights[-i + 1].transpose(), delta) * activation_function.get_derivative(self.neuron_values[-i])
             biases_diff[-i] = delta
-            weights_diff[-i] = np.dot(delta.reshape((len(delta), 1)), self.activations[-i - 1].reshape((1, len(self.activations[-i - 1]))))
+            weights_diff[-i] = np.dot(delta, self.activations[-i - 1].transpose())
         return weights_diff, biases_diff
 
     def predict(self, test_dataset_x) -> np.array:
@@ -98,10 +98,11 @@ class NeuralNetworkSolver:
         :return: Array of numbers (0-9) representing the predicted classes
         """
         predictions = []
+        func = self.get_parameter("activation_function")
         for i in range(len(test_dataset_x)):
             input = test_dataset_x[i]
-            for ii, b, w in zip(range(len(self.biases)), self.biases, self.weights):
-                input = self.parameters["activation_function"].get_value(np.dot(w, input) + b)
+            for b, w in zip(self.biases, self.weights):
+                input = func.get_value(np.dot(w, input) + b)
             predictions.append(np.argmax(input))
         return predictions
 
