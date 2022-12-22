@@ -45,7 +45,7 @@ def prepare_datasets():
 
 
 def convert_label_to_neuron_values(label: int) -> np.ndarray:
-    neuron_values = np.zeros(10)
+    neuron_values = np.zeros((10, 1))
     neuron_values[label] = 1.0
     return neuron_values
 
