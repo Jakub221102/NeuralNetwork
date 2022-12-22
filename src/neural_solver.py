@@ -21,11 +21,11 @@ class NeuralNetworkSolver:
             "batch_size": batch_size,
             "epochs": epochs
         }
-        self.biases = [np.random.randn(y) for y in neurons_per_layer[1:]]
+        self.biases = [np.random.randn(y, 1) for y in neurons_per_layer[1:]]
         self.weights = [np.random.uniform(-1 / sqrt(x), 1 / sqrt(x), [y, x]) for x, y in
                         zip(neurons_per_layer[:-1], neurons_per_layer[1:])]
-        self.neuron_values = [np.zeros(y) for y in neurons_per_layer]
-        self.activations = [np.zeros(y) for y in neurons_per_layer]
+        self.neuron_values = [np.zeros(y, 1) for y in neurons_per_layer]
+        self.activations = [np.zeros(y, 1) for y in neurons_per_layer]
 
     def get_parameter(self, param):
         return self.parameters[param] if param in self.parameters else None
