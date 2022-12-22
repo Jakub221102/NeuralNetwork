@@ -52,9 +52,4 @@ def convert_label_to_neuron_values(label: int) -> np.ndarray:
 
 if __name__ == '__main__':
     train_dataset, validate_dataset, test_dataset = prepare_datasets()
-    # train_dataset = list(train_dataset)
-    # print(train_dataset[0])
-    # print(train_dataset[0][0])
-    # print(train_dataset[1][0])
-    # print(validate_dataset[0].shape)
-    # generate_img(train_dataset[0], train_dataset[1])
+

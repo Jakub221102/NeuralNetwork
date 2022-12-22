@@ -12,15 +12,6 @@ class ActivationFunction:
     def get_derivative(self, x):
         ...
 
-
-class ReLUActivationFunction(ActivationFunction):
-    def get_value(self, x):
-        return np.max(0, x)
-
-    def get_derivative(self, x):
-        return 1 if x > 0 else 0
-
-
 class SigmoidActivationFunction(ActivationFunction):
     def get_value(self, x):
         return 1 / (1 + np.exp(-x))

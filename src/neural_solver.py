@@ -108,10 +108,5 @@ class NeuralNetworkSolver:
 
     @staticmethod
     def accuracy(predictions, test_dataset):
-        # good_number = 0
-        #     for predicted, y_value in zip(predictions, test_dataset[1]):
-        #         if predicted == y_value:
-        #             good_number += 1
-        #     precent = round(good_number * 100 / test_dataset[1].size, 2)
         return metrics.accuracy_score(test_dataset[1], predictions)
 
